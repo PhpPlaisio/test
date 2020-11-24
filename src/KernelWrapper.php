@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Plaisio\Test;
 
+use Plaisio\Cookie\CookieJar;
 use Plaisio\ErrorLogger\DevelopmentErrorLogger;
 use Plaisio\Helper\OB;
 use Plaisio\PlaisioKernel;
@@ -72,6 +73,61 @@ class KernelWrapper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
+   * Returns the content of the response the to request.
+   *
+   * @return string
+   */
+  public function getContent(): string
+  {
+    return $this->content ?? $this->response->getContent();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the cookies of the response the to request.
+   *
+   * @return CookieJar
+   */
+  public function getCookies(): CookieJar
+  {
+    return $this->kernel->cookie;
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the headers of the response the to request as key value pairs.
+   *
+   * @return array
+   */
+  public function getHeaders(): array
+  {
+    return $this->response->getHeaders();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the output of the kernel.
+   *
+   * @return string
+   */
+  public function getOutput(): string
+  {
+    return $this->ob->getContents();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the status of the response the to request.
+   *
+   * @return int
+   */
+  public function getStatus(): int
+  {
+    return $this->response->getStatus();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
    * Requests an URL to the kernel.
    *
    * @param string $url     The URL to request.
@@ -79,14 +135,8 @@ class KernelWrapper
    * @param array  $server  The server variable to use.
    * @param array  $cookies The cookie to send to the kernel.
    * @param array  $post    The POST variables.
-   *
-   * @return array
    */
-  public function request(string $url,
-                          string $method,
-                          array $server = [],
-                          array $cookies = [],
-                          array $post = []): array
+  public function request(string $url, string $method, array $server = [], array $cookies = [], array $post = []): void
   {
     $preserve = [$_SERVER, $_GET, $_COOKIE, $_POST];
 
@@ -95,7 +145,7 @@ class KernelWrapper
     $_POST   = $post;
     $_GET    = [];
 
-    $this->initGlobals($url, $preserve[0]['PLAISIO_ENV'], $method);
+    $this->initGlobals($url, $method, $preserve[0]['PLAISIO_ENV']);
 
     $this->setUp();
     try
@@ -127,12 +177,6 @@ class KernelWrapper
     }
 
     [$_SERVER, $_GET, $_COOKIE, $_POST] = $preserve;
-
-    return ['status'  => $this->response->getStatus(),
-            'headers' => $this->response->getHeaders(),
-            'content' => $this->content ?? $this->response->getContent(),
-            'cookies' => $this->kernel->cookie,
-            'output'  => $this->ob->getClean()];
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -207,7 +251,7 @@ class KernelWrapper
       $this->errorHandler->unregisterErrorHandler();
     }
 
-    // Ensure the transaction is rolled back.
+    // Ensure the transaction is rolled back and the connection has been disconnected.
     try
     {
       $this->kernel->DL->rollback();
