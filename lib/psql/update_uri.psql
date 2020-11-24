@@ -1,0 +1,22 @@
+/**
+ * @param int    :p_uri_id       The ID of the URI.
+ * @param int    :p_bui_id       The ID of the base URI.
+ * @param int    :p_uri_status   The status of the URI.
+ * @param string :p_uri_location The location of redirect header.
+ * @param string :p_uri_title    The title of the URI.
+ * @param string :p_uri_source   The source of the URI.
+ *
+ * @type none
+ */
+update TST_URI
+set    uri_status   = :p_uri_status
+,      uri_location = :p_uri_location
+,      uri_title    = :p_uri_title
+,      uri_source   = :p_uri_source
+where uri_id = :p_uri_id
+;
+
+update TST_BASE_URI
+set    bui_crawled = bui_crawled + 1
+where  bui_id = :p_bui_id
+;

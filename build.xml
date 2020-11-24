@@ -1,0 +1,38 @@
+<project name="Nahouw" default="build" basedir=".">
+    <property name="BUILD_DIR" value="../build"/>
+
+    <target name="code-generation">
+        <exec executable="bin/stratum" checkreturn="true" passthru="true">
+            <arg value="--ansi"/>
+            <arg value="stratum"/>
+            <arg value="etc/crawl-stratum.ini"/>
+        </exec>
+    </target>
+
+    <target name="kernel">
+        <exec executable="bin/plaisio" checkreturn="true" passthru="true">
+            <arg value="--ansi"/>
+            <arg value="plaisio:kernel-properties"/>
+        </exec>
+    </target>
+
+    <!-- Run composer update and executes various other updates -->
+    <target name="update">
+        <exec executable="composer" checkreturn="true" passthru="true">
+            <arg value="--ansi"/>
+            <arg value="update"/>
+        </exec>
+        <phing phingfile="build.xml" target="code-generation" haltonfailure="true"/>
+        <phing phingfile="build.xml" target="kernel" haltonfailure="true"/>
+    </target>
+
+    <!-- Runs all unit tests. -->
+    <target name="unit">
+        <exec executable="bin/phpunit" passthru="true" checkreturn="true">
+            <arg value="--bootstrap=test/bootstrap.php"/>
+            <arg value="test"/>
+        </exec>
+    </target>
+
+    <target name="build" depends=""/>
+</project>

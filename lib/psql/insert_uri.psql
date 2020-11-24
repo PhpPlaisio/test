@@ -1,0 +1,21 @@
+/**
+ * Insert an URI.
+ *
+ * @param string :p_uri_uri        The URI to be inserted.
+ * @param int    :p_bui_id         The ID of the base URI of the URI to be inserted.
+ * @param int    :p_uri_id_referer The ID of the URI the is referring to the URI..
+ *
+ * @type lastInsertId
+ */
+insert into TST_URI( uri_uri
+,                    bui_id
+,                    uri_id_referer )
+values( :p_uri_uri
+,       :p_bui_id
+,       :p_uri_id_referer)
+;
+
+update TST_BASE_URI
+set    bui_pages = bui_pages + 1
+where  bui_id = :p_bui_id
+;

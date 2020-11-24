@@ -1,0 +1,17 @@
+/**
+ * Selects the URIs to be crawled.
+ *
+ * @type rows
+ */
+select t2.uri_id
+,      t2.bui_id
+,      t2.uri_uri
+from   TST_BASE_URI t1
+join   TST_URI      t2  on  t2.bui_id = t1.bui_id
+where  t1.bui_crawled < t1.bui_pages
+and    t1.bui_crawled < 10
+and    t2.uri_title   is null
+order by t1.bui_crawled
+,        random()
+limit 10
+;
