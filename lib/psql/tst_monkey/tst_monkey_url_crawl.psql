@@ -1,0 +1,18 @@
+/**
+ * Selects URLs to be crawled.
+ *
+ * @type rows
+ */
+select t2.url_id
+,      t2.bul_id
+,      t2.url_url
+,      t2.url_id_referrer
+from   TST_MONKEY_BASE_URL t1
+join   TST_MONKEY_URL      t2  on  t2.bul_id = t1.bul_id
+where  t1.bul_crawled < t1.bul_pages
+and    t1.bul_crawled < 10
+and    t2.url_title   is null
+order by t1.bul_crawled
+,        random()
+limit 10
+;

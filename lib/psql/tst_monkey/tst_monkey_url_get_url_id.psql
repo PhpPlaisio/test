@@ -1,0 +1,12 @@
+/**
+ * Selects the ID of an URL.
+ *
+ * @param string :p_url_url The URL.
+ *
+ * @type   singleton0
+ * @return int|null
+ */
+select url_id
+from   TST_MONKEY_URL
+where  url_url = :p_url_url
+;

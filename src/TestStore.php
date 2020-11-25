@@ -1,0 +1,156 @@
+<?php
+declare(strict_types=1);
+
+namespace Plaisio\Test;
+
+use SetBased\Stratum\SqlitePdo\SqlitePdoDataLayer;
+
+/**
+ * The data layer.
+ */
+class TestStore extends SqlitePdoDataLayer
+{
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Selects URLs to be crawled.
+   *
+   * @return array[]
+   */
+  public function tstMonkeyUrlCrawl(): array
+  {
+    $query = <<< EOT
+select t2.url_id
+,      t2.bul_id
+,      t2.url_url
+,      t2.url_id_referrer
+from   TST_MONKEY_BASE_URL t1
+join   TST_MONKEY_URL      t2  on  t2.bul_id = t1.bul_id
+where  t1.bul_crawled < t1.bul_pages
+and    t1.bul_crawled < 10
+and    t2.url_title   is null
+order by t1.bul_crawled
+,        random()
+limit 10
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 5).$query;
+
+    return $this->executeRows($query);
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Selects the details of an URL.
+   *
+   * @param int|null $pUrlId The ID of the URL.
+   *
+   * @return array
+   */
+  public function tstMonkeyUrlGetDetails(?int $pUrlId): array
+  {
+    $replace = [':p_url_id' => $this->quoteInt($pUrlId)];
+    $query   = <<< EOT
+select url_id
+,      url_url
+,      url_id_referrer
+from   TST_MONKEY_URL
+where  url_id = :p_url_id
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 7).$query;
+
+    return $this->executeRow1($query, $replace);
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Selects the ID of an URL.
+   *
+   * @param string|null $pUrlUrl The URL.
+   *
+   * @return int|null
+   */
+  public function tstMonkeyUrlGetUrlId(?string $pUrlUrl): ?int
+  {
+    $replace = [':p_url_url' => $this->quoteVarchar($pUrlUrl)];
+    $query   = <<< EOT
+select url_id
+from   TST_MONKEY_URL
+where  url_url = :p_url_url
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 8).$query;
+
+    return $this->executeSingleton0($query, $replace);
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Insert an URL.
+   *
+   * @param string|null $pUrlUrl        The URL to be inserted.
+   * @param int|null    $pBulId         The ID of the base URL of the URI to be inserted.
+   * @param int|null    $pUrlIdReferrer The ID of the URI the is referring to the URI.
+   *
+   * @return int
+   */
+  public function tstMonkeyUrlInsert(?string $pUrlUrl, ?int $pBulId, ?int $pUrlIdReferrer): int
+  {
+    $replace = [':p_url_url' => $this->quoteVarchar($pUrlUrl), ':p_bul_id' => $this->quoteInt($pBulId), ':p_url_id_referrer' => $this->quoteInt($pUrlIdReferrer)];
+    $query   = <<< EOT
+insert into TST_MONKEY_URL( url_url
+,                           bul_id
+,                           url_id_referrer )
+values( :p_url_url
+,       :p_bul_id
+,       :p_url_id_referrer)
+;
+
+update TST_MONKEY_BASE_URL
+set    bul_pages = bul_pages + 1
+where  bul_id = :p_bul_id
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 9).$query;
+
+    $this->executeNone($query, $replace);
+    return $this->lastInsertId();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Updates an URL.
+   *
+   * @param int|null    $pUrlId       The ID of the URL.
+   * @param int|null    $pBulId       The ID of the base URL.
+   * @param int|null    $pUrlStatus   The status of the URL.
+   * @param string|null $pUrlLocation The location of redirect header.
+   * @param string|null $pUrlTitle    The title of the URL.
+   * @param string|null $pUrlSource   The source of the URL.
+   */
+  public function tstMonkeyUrlUpdate(?int $pUrlId, ?int $pBulId, ?int $pUrlStatus, ?string $pUrlLocation, ?string $pUrlTitle, ?string $pUrlSource): void
+  {
+    $replace = [':p_url_id' => $this->quoteInt($pUrlId), ':p_bul_id' => $this->quoteInt($pBulId), ':p_url_status' => $this->quoteInt($pUrlStatus), ':p_url_location' => $this->quoteVarchar($pUrlLocation), ':p_url_title' => $this->quoteVarchar($pUrlTitle), ':p_url_source' => $this->quoteVarchar($pUrlSource)];
+    $query   = <<< EOT
+update TST_MONKEY_URL
+set    url_status   = :p_url_status
+,      url_location = :p_url_location
+,      url_title    = :p_url_title
+,      url_source   = :p_url_source
+where url_id = :p_url_id
+;
+
+update TST_MONKEY_BASE_URL
+set    bul_crawled = bul_crawled + 1
+where  bul_id = :p_bul_id
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 12).$query;
+
+    $this->executeNone($query, $replace);
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+}
+
+//----------------------------------------------------------------------------------------------------------------------

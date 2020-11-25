@@ -1,0 +1,24 @@
+/**
+ * Updates an URL.
+
+ * @param int    :p_url_id       The ID of the URL.
+ * @param int    :p_bul_id       The ID of the base URL.
+ * @param int    :p_url_status   The status of the URL.
+ * @param string :p_url_location The location of redirect header.
+ * @param string :p_url_title    The title of the URL.
+ * @param string :p_url_source   The source of the URL.
+ *
+ * @type none
+ */
+update TST_MONKEY_URL
+set    url_status   = :p_url_status
+,      url_location = :p_url_location
+,      url_title    = :p_url_title
+,      url_source   = :p_url_source
+where url_id = :p_url_id
+;
+
+update TST_MONKEY_BASE_URL
+set    bul_crawled = bul_crawled + 1
+where  bul_id = :p_bul_id
+;
