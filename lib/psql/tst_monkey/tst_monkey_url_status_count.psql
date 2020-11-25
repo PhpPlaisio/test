@@ -1,0 +1,42 @@
+/**
+ * Selects the number of URL crawled group by status code classes, i.e. '1xx', '2xx', ..., '5xx'.
+ *
+ * @type rows
+ */
+select url_status
+,      sum(url_count) as url_count
+from
+(
+  select '1xx' as url_status
+  ,       0    as url_count
+
+  union all
+
+  select '2xx'
+  ,       0
+
+  union all
+
+  select '3xx'
+  ,       0
+
+  union all
+
+  select '4xx'
+  ,       0
+
+  union all
+
+  select '5xx'
+  ,       0
+
+  union all
+
+  select '' || (url_status / 100) || 'xx'
+  ,      count(*)
+  from   TST_MONKEY_URL
+  where  url_status is not null
+  group by 1
+) t
+group by 1
+;

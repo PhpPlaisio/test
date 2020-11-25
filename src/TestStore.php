@@ -12,6 +12,32 @@ class TestStore extends SqlitePdoDataLayer
 {
   //--------------------------------------------------------------------------------------------------------------------
   /**
+   * Insert a base URL.
+   *
+   * @param string|null $pBulUrl The base URL to be inserted.
+   *
+   * @return int
+   */
+  public function tstMonkeyBaseUrlInsert(?string $pBulUrl): int
+  {
+    $replace = [':p_bul_url' => $this->quoteVarchar($pBulUrl)];
+    $query   = <<< EOT
+insert into TST_MONKEY_BASE_URL( bul_url
+,                                bul_pages
+,                                bul_crawled )
+values( :p_bul_url
+,       0
+,       0)
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 7).$query;
+
+    $this->executeNone($query, $replace);
+    return $this->lastInsertId();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
    * Selects URLs to be crawled.
    *
    * @return array[]
@@ -115,6 +141,58 @@ EOT;
 
     $this->executeNone($query, $replace);
     return $this->lastInsertId();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Selects the number of URL crawled group by status code classes, i.e. '1xx', '2xx', ..., '5xx'.
+   *
+   * @return array[]
+   */
+  public function tstMonkeyUrlStatusCount(): array
+  {
+    $query = <<< EOT
+select url_status
+,      sum(url_count) as url_count
+from
+(
+  select '1xx' as url_status
+  ,       0    as url_count
+
+  union all
+
+  select '2xx'
+  ,       0
+
+  union all
+
+  select '3xx'
+  ,       0
+
+  union all
+
+  select '4xx'
+  ,       0
+
+  union all
+
+  select '5xx'
+  ,       0
+
+  union all
+
+  select '' || (url_status / 100) || 'xx'
+  ,      count(*)
+  from   TST_MONKEY_URL
+  where  url_status is not null
+  group by 1
+) t
+group by 1
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 5).$query;
+
+    return $this->executeRows($query);
   }
 
   //--------------------------------------------------------------------------------------------------------------------
