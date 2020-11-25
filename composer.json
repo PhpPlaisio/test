@@ -8,10 +8,13 @@
   "license": "MIT",
   "require": {
     "php": ">=7.3",
+    "ext-dom": "*",
+    "ext-libxml": "*",
     "plaisio/console": "^2.4.4",
     "plaisio/cookie": "^1.0",
     "plaisio/error-logger-core": "^1.2",
     "plaisio/helper-ob": "^1.1",
+    "plaisio/helper-url": "^1.1.1",
     "plaisio/kernel": "^3.0",
     "plaisio/request-handler": "^2.0",
     "plaisio/response": "^2.0",

@@ -35,16 +35,9 @@ class KernelWrapper
   /**
    * The kernel.
    *
-   * @var PlaisioKernel|null
+   * @var PlaisioKernel
    */
   private $kernel;
-
-  /**
-   * The class of the kernel.
-   *
-   * @var string
-   */
-  private $kernelClass;
 
   /**
    * The output buffer for logging the output of the kernel.
@@ -64,11 +57,11 @@ class KernelWrapper
   /**
    * Object constructor.
    *
-   * @param string $kernelClass The class of the kernel.
+   * @param PlaisioKernel $kernel The kernel.
    */
-  public function __construct(string $kernelClass)
+  public function __construct(PlaisioKernel $kernel)
   {
-    $this->kernelClass = $kernelClass;
+    $this->kernel = $kernel;
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -155,8 +148,6 @@ class KernelWrapper
       $this->errorHandler = new ErrorHandler();
       $this->errorHandler->registerErrorHandler();
 
-      /** @var PlaisioKernel $kernel */
-      $this->kernel   = new $this->kernelClass();
       $this->response = $this->kernel->requestHandler->handleRequest();
     }
     catch (\Throwable $throwable)
@@ -234,7 +225,6 @@ class KernelWrapper
   private function setUp(): void
   {
     $this->ob           = new OB();
-    $this->kernel       = null;
     $this->errorHandler = null;
     $this->content      = null;
   }
