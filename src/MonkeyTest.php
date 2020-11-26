@@ -210,7 +210,8 @@ class MonkeyTest
    */
   private function getPageUrl(array $url)
   {
-    $wrapper = $this->request($url['url_url'], 'GET');
+    $link    = $this->removeFragment($url['url_url']);
+    $wrapper = $this->request($link, 'GET');
 
     $location = ($wrapper->getHeaders())['location'] ?? '';
     $content  = $wrapper->getContent();
@@ -232,6 +233,22 @@ class MonkeyTest
                                      $location,
                                      $title,
                                      $wrapper->getContent());
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns an URL with fragment (if any) removed.
+   *
+   * @param string $url The absolute URL of the page.
+   *
+   * @return string
+   */
+  private function removeFragment(string $url): string
+  {
+    $parts = parse_url($url);
+    unset($parts['fragment']);
+
+    return Url::unParseUrl($parts);
   }
 
   //--------------------------------------------------------------------------------------------------------------------
