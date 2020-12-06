@@ -11,22 +11,22 @@
     "ext-dom": "*",
     "ext-libxml": "*",
     "plaisio/console": "^2.4.4",
-    "plaisio/cookie": "^1.0",
+    "plaisio/cookie": "^2.0",
     "plaisio/error-logger-core": "^1.2",
     "plaisio/helper-ob": "^1.1",
     "plaisio/helper-url": "^1.1.1",
     "plaisio/kernel": "^3.0",
     "plaisio/request-handler": "^2.0",
     "plaisio/response": "^2.0",
-    "plaisio/response-core": "^2.2",
+    "plaisio/response-core": "^2.3",
     "setbased/php-stratum": "^6.0",
     "setbased/php-stratum-middle": "^5.7",
     "setbased/php-stratum-sqlite-pdo": "^1.4",
-    "symfony/console": "^5.0"
+    "symfony/console": "^5.2.0"
   },
   "require-dev": {
     "phing/phing": "^2.0",
-    "phpunit/phpunit": "^9.0"
+    "phpunit/phpunit": "^9.5"
   },
   "autoload": {
     "psr-4": {
