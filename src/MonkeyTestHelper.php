@@ -19,6 +19,42 @@ abstract class MonkeyTestHelper
    */
   protected $excludePatterns = [];
 
+  /**
+   * Pattern of paths for which forms must not be submitted.
+   *
+   * @var array
+   */
+  private $excludeFormSubmitPatterns = [];
+
+  /**
+   * Pattern of paths for which forms must submit changes.
+   *
+   * @var array
+   */
+  private $excludeSubmitChangesPatterns = [];
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Whether a subject match a list of preg patterns.
+   *
+   * @param array  $patterns The list of patterns.
+   * @param string $subject  The subject.
+   *
+   * @return bool
+   */
+  private static function matchPattern(array $patterns, string $subject): bool
+  {
+    foreach ($patterns as $pattern)
+    {
+      if (preg_match($pattern, $subject)===1)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   //--------------------------------------------------------------------------------------------------------------------
   /**
    * Returns the initial URL to crawl.
@@ -34,6 +70,32 @@ abstract class MonkeyTestHelper
    * @return PlaisioKernel
    */
   abstract public function getKernel(): PlaisioKernel;
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Whether to exclude an URL from submitting forms based on the path of the URL.
+   *
+   * @param string $path The path of the URL.
+   *
+   * @return bool
+   */
+  public function isFormSubmitExcludedByPath(string $path): bool
+  {
+    return self::matchPattern($this->excludeFormSubmitPatterns, $path);
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Whether to exclude an URL from submitting forms which changes based on the path of the URL.
+   *
+   * @param string $path The path of the URL.
+   *
+   * @return bool
+   */
+  public function isSubmitChangesExcludedByPath(string $path): bool
+  {
+    return self::matchPattern($this->excludeSubmitChangesPatterns, $path);
+  }
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
@@ -78,15 +140,7 @@ abstract class MonkeyTestHelper
    */
   protected function isExcludedByPath(string $path): bool
   {
-    foreach ($this->excludePatterns as $pattern)
-    {
-      if (preg_match($pattern, $path)===1)
-      {
-        return true;
-      }
-    }
-
-    return false;
+    return self::matchPattern($this->excludePatterns, $path);
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -108,6 +162,48 @@ abstract class MonkeyTestHelper
     }
 
     $this->excludePatterns[] = $pattern;
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Registers a path to be exclude from submitting forms.
+   *
+   * @param string $path    The absolute path.
+   * @param bool   $leading Whether to exclude the path based on the leading part of full path.
+   */
+  protected function registerPathToExcludeFormSubmit(string $path, bool $leading = false): void
+  {
+    if ($leading)
+    {
+      $pattern = sprintf('|^%s|', preg_quote($path, '|'));
+    }
+    else
+    {
+      $pattern = sprintf('|^%s$|', preg_quote($path, '|'));
+    }
+
+    $this->excludeFormSubmitPatterns[] = $pattern;
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Registers a path to be exclude from submitting forms
+   *
+   * @param string $path    The absolute path.
+   * @param bool   $leading Whether to exclude the path based on the leading part of full path.
+   */
+  protected function registerPathToExcludeSubmitChanges(string $path, bool $leading = false): void
+  {
+    if ($leading)
+    {
+      $pattern = sprintf('|^%s|', preg_quote($path, '|'));
+    }
+    else
+    {
+      $pattern = sprintf('|^%s$|', preg_quote($path, '|'));
+    }
+
+    $this->excludeSubmitChangesPatterns[] = $pattern;
   }
 
   //--------------------------------------------------------------------------------------------------------------------

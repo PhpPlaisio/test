@@ -53,7 +53,7 @@ from   TST_MONKEY_BASE_URL t1
 join   TST_MONKEY_URL      t2  on  t2.bul_id = t1.bul_id
 where  t1.bul_crawled < t1.bul_pages
 and    t1.bul_crawled < 10
-and    t2.url_title   is null
+and    t2.url_status  is null
 order by t1.bul_crawled
 ,        random()
 limit 10
@@ -62,6 +62,30 @@ EOT;
     $query = str_repeat(PHP_EOL, 5).$query;
 
     return $this->executeRows($query);
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Selects whether tan URL exists.
+   *
+   * @param string|null $pUrlUrl The URL.
+   *
+   * @return bool
+   */
+  public function tstMonkeyUrlExists(?string $pUrlUrl): bool
+  {
+    $replace = [':p_url_url' => $this->quoteVarchar($pUrlUrl)];
+    $query   = <<< EOT
+select 1
+from   TST_MONKEY_URL
+where  url_url = :p_url_url
+and    ifnull(url_method, 'GET') = 'GET'
+limit 1
+;
+EOT;
+    $query = str_repeat(PHP_EOL, 8).$query;
+
+    return !empty($this->executeSingleton0($query, $replace));
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -90,24 +114,25 @@ EOT;
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Selects the ID of an URL.
+   * Selects URLs with forms.
    *
-   * @param string|null $pUrlUrl The URL.
-   *
-   * @return int|null
+   * @return array[]
    */
-  public function tstMonkeyUrlGetUrlId(?string $pUrlUrl): ?int
+  public function tstMonkeyUrlGetUrlsWithForms(): array
   {
-    $replace = [':p_url_url' => $this->quoteVarchar($pUrlUrl)];
-    $query   = <<< EOT
+    $query = <<< EOT
 select url_id
+,      bul_id
+,      url_url
+,      url_id_referrer
 from   TST_MONKEY_URL
-where  url_url = :p_url_url
-;
+where  url_method    = 'GET'
+and    url_has_forms = 1
+order by random()
 EOT;
-    $query = str_repeat(PHP_EOL, 8).$query;
+    $query = str_repeat(PHP_EOL, 5).$query;
 
-    return $this->executeSingleton0($query, $replace);
+    return $this->executeRows($query);
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -199,22 +224,28 @@ EOT;
   /**
    * Updates an URL.
    *
-   * @param int|null    $pUrlId       The ID of the URL.
-   * @param int|null    $pBulId       The ID of the base URL.
-   * @param int|null    $pUrlStatus   The status of the URL.
-   * @param string|null $pUrlLocation The location of redirect header.
-   * @param string|null $pUrlTitle    The title of the URL.
-   * @param string|null $pUrlSource   The source of the URL.
+   * @param int|null    $pUrlId        The ID of the URL.
+   * @param int|null    $pBulId        The ID of the base URL.
+   * @param string|null $pUrlMethod    The used method.
+   * @param int|null    $pUrlStatus    The status of the URL.
+   * @param string|null $pUrlLocation  The location of redirect header.
+   * @param string|null $pUrlTitle     The title of the URL.
+   * @param int|null    $pUrlHasForms  Whether the document has forms.
+   * @param string|null $pUrlSubmitted The submitted values.
+   * @param string|null $pUrlSource    The source of the URL.
    */
-  public function tstMonkeyUrlUpdate(?int $pUrlId, ?int $pBulId, ?int $pUrlStatus, ?string $pUrlLocation, ?string $pUrlTitle, ?string $pUrlSource): void
+  public function tstMonkeyUrlUpdate(?int $pUrlId, ?int $pBulId, ?string $pUrlMethod, ?int $pUrlStatus, ?string $pUrlLocation, ?string $pUrlTitle, ?int $pUrlHasForms, ?string $pUrlSubmitted, ?string $pUrlSource): void
   {
-    $replace = [':p_url_id' => $this->quoteInt($pUrlId), ':p_bul_id' => $this->quoteInt($pBulId), ':p_url_status' => $this->quoteInt($pUrlStatus), ':p_url_location' => $this->quoteVarchar($pUrlLocation), ':p_url_title' => $this->quoteVarchar($pUrlTitle), ':p_url_source' => $this->quoteVarchar($pUrlSource)];
+    $replace = [':p_url_id' => $this->quoteInt($pUrlId), ':p_bul_id' => $this->quoteInt($pBulId), ':p_url_method' => $this->quoteVarchar($pUrlMethod), ':p_url_status' => $this->quoteInt($pUrlStatus), ':p_url_location' => $this->quoteVarchar($pUrlLocation), ':p_url_title' => $this->quoteVarchar($pUrlTitle), ':p_url_has_forms' => $this->quoteInt($pUrlHasForms), ':p_url_submitted' => $this->quoteVarchar($pUrlSubmitted), ':p_url_source' => $this->quoteVarchar($pUrlSource)];
     $query   = <<< EOT
 update TST_MONKEY_URL
-set    url_status   = :p_url_status
-,      url_location = :p_url_location
-,      url_title    = :p_url_title
-,      url_source   = :p_url_source
+set    url_method    = :p_url_method
+,      url_status    = :p_url_status
+,      url_location  = :p_url_location
+,      url_title     = :p_url_title
+,      url_has_forms = :p_url_has_forms
+,      url_submitted = :p_url_submitted
+,      url_source    = :p_url_source
 where url_id = :p_url_id
 ;
 
@@ -223,7 +254,7 @@ set    bul_crawled = bul_crawled + 1
 where  bul_id = :p_bul_id
 ;
 EOT;
-    $query = str_repeat(PHP_EOL, 12).$query;
+    $query = str_repeat(PHP_EOL, 15).$query;
 
     $this->executeNone($query, $replace);
   }

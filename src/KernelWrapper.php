@@ -159,12 +159,9 @@ class KernelWrapper
       $this->tearDown();
     }
 
-    foreach ($this->kernel->cookie as $cookie)
+    if ($this->response->getContent()==='')
     {
-      if ($cookie->expires===null)
-      {
-        $this->kernel->cookie->remove($cookie->name, false);
-      }
+      $this->content = $this->ob->getClean();
     }
 
     [$_SERVER, $_GET, $_COOKIE, $_POST] = $preserve;
@@ -205,16 +202,14 @@ class KernelWrapper
   /**
    * Handles an internal error of the kernel.
    *
-   * @param \Exception $throwable
+   * @param \Throwable $throwable
    */
-  private function internalError(\Exception $throwable): void
+  private function internalError(\Throwable $throwable): void
   {
-    $ob     = new OB();
     $logger = new DevelopmentErrorLogger();
     $logger->dumpVars(['GLOBALS' => $GLOBALS, 'nub' => $this->kernel]);
     $logger->logError($throwable);
 
-    $this->content  = $ob->getClean();
     $this->response = new InternalServerErrorResponse();
   }
 

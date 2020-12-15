@@ -6,6 +6,8 @@ namespace Plaisio\Test;
 use Plaisio\Cookie\Cookie;
 use Plaisio\Cookie\CookieJar;
 use Plaisio\Helper\Url;
+use Plaisio\Test\Form\Form;
+use SetBased\Helper\Cast;
 
 /**
  * Test cases for CoreRequestParameterResolverTest.
@@ -110,6 +112,21 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
+   * Whether a document has forms.
+   *
+   * @param \DOMDocument $doc The HTML document.
+   *
+   * @return \DOMNodeList
+   */
+  private function extractForms(\DOMDocument $doc): \DOMNodeList
+  {
+    $xpath = new \DOMXpath($doc);
+
+    return $xpath->query('//form');
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
    * Extracts the links from a HTML document.
    *
    * @param \DOMDocument $doc The HTMl document.
@@ -129,8 +146,7 @@ class MonkeyTest
         if ($this->helper->mustFollowUrl($link))
         {
           $bulId = $this->getBulId($link);
-          $urlId = $this->store->tstMonkeyUrlGetUrlId($link);
-          if ($urlId===null)
+          if (!$this->store->tstMonkeyUrlExists($link))
           {
             $this->store->tstMonkeyUrlInsert($link, $bulId, $url['url_id']);
           }
@@ -210,29 +226,44 @@ class MonkeyTest
    */
   private function getPageUrl(array $url)
   {
-    $link    = $this->removeFragment($url['url_url']);
-    $wrapper = $this->request($link, 'GET');
+    $wrapper = $this->request($url['url_url'], 'GET');
 
     $location = ($wrapper->getHeaders())['location'] ?? '';
     $content  = $wrapper->getContent();
-    $title    = null;
 
     if (substr($content ?? '', 0, 1)==='<')
     {
       $doc = new \DOMDocument();
       @$doc->loadHTML($content, LIBXML_NOWARNING | LIBXML_NOERROR);
       $this->extractLinks($doc, $url);
-      $title = $this->extractTitle($doc);
+      $title    = $this->extractTitle($doc);
+      $forms    = $this->extractForms($doc);
+      $hasForms = (count($forms)>=1);
+    }
+    else
+    {
+      $doc      = null;
+      $forms    = null;
+      $title    = null;
+      $hasForms = false;
     }
 
     $this->requestLog3($title ?? $location ?? '');
 
     $this->store->tstMonkeyUrlUpdate($url['url_id'],
                                      $url['bul_id'],
+                                     'GET',
                                      $wrapper->getStatus(),
                                      $location,
                                      $title,
+                                     Cast::toOptInt($hasForms),
+                                     null,
                                      $wrapper->getContent());
+
+    if ($hasForms)
+    {
+      $this->testForms($url, $doc, $forms);
+    }
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -257,16 +288,14 @@ class MonkeyTest
    *
    * @param string $url    The URL to request.
    * @param string $method The method to use.
-   * @param array  $server The $_SERVER global variable.
    * @param array  $post   The $_POST global variable.
    *
    * @return KernelWrapper
    */
-  private function request(string $url,
-                           string $method,
-                           array $server = [],
-                           array $post = []): KernelWrapper
+  private function request(string $url, string $method, array $post = []): KernelWrapper
   {
+    $url = $this->removeFragment($url);
+
     $this->requestLog1($url, $method);
 
     $wrapper = new KernelWrapper($this->helper->getKernel());
@@ -278,7 +307,7 @@ class MonkeyTest
       $cookies[$cookie->name] = $cookie->value;
     }
 
-    $wrapper->request($url, $method, $server, $cookies, $post);
+    $wrapper->request($url, $method, [], $cookies, $post);
 
     $this->requestLog2($wrapper->getStatus());
 
@@ -317,6 +346,87 @@ class MonkeyTest
   private function requestLog3(string $title): void
   {
     fwrite(STDERR, sprintf(' %-40s', mb_substr($title, 0, 40)));
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Test a form on a page.
+   *
+   * @param array        $url  The URL of the page.
+   * @param \DOMDocument $doc  The DOM document.
+   * @param \DOMNode     $node The form.
+   */
+  private function testForm(array $url, \DOMDocument $doc, \DOMNode $node): void
+  {
+    $form  = new Form($doc, $node);
+    $parts = parse_url($url['url_url']);
+    if ($form->isSubmittable() && !$this->helper->isFormSubmitExcludedByPath($parts['path'] ?? '/'))
+    {
+      if ($this->helper->isSubmitChangesExcludedByPath($parts['path'] ?? '/'))
+      {
+        $values = $form->getOriginalValues();
+      }
+      else
+      {
+        $values = $form->getRandomValues();
+      }
+
+      if (isset($this->cookies['ses_csrf_token']))
+      {
+        $values['ses_csrf_token'] = $this->cookies['ses_csrf_token']->value;
+      }
+
+      $link     = Url::combine($url['url_url'], $form->getUrl());
+      $bulId    = $this->getBulId($link);
+      $targetId = $this->store->tstMonkeyUrlInsert($link, $bulId, $url['url_id']);
+
+      $wrapper = $this->request($link, $form->getMethod(), $values);
+
+      $location = ($wrapper->getHeaders())['location'] ?? '';
+      $content  = $wrapper->getContent();
+
+      if (substr($content ?? '', 0, 1)==='<')
+      {
+        $doc = new \DOMDocument();
+        @$doc->loadHTML($content, LIBXML_NOWARNING | LIBXML_NOERROR);
+        $this->extractLinks($doc, $url);
+        $title = $this->extractTitle($doc);
+      }
+      else
+      {
+        $doc   = null;
+        $forms = null;
+        $title = null;
+      }
+
+      $this->requestLog3($title ?? $location ?? '');
+
+      $this->store->tstMonkeyUrlUpdate($targetId,
+                                       null,
+                                       $form->getMethod(),
+                                       $wrapper->getStatus(),
+                                       $location,
+                                       $title,
+                                       null,
+                                       serialize($values),
+                                       $content);
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Test the forms on a page.
+   *
+   * @param array        $url   The URL of the page.
+   * @param \DOMDocument $doc   The DOM document.
+   * @param \DOMNodeList $forms The list with forms.
+   */
+  private function testForms(array $url, \DOMDocument $doc, \DOMNodeList $forms): void
+  {
+    foreach ($forms as $form)
+    {
+      $this->testForm($url, $doc, $form);
+    }
   }
 
   //--------------------------------------------------------------------------------------------------------------------

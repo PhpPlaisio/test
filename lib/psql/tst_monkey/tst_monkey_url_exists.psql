@@ -1,12 +1,14 @@
 /**
- * Selects the ID of an URL.
+ * Selects whether tan URL exists.
  *
  * @param string :p_url_url The URL.
  *
  * @type   singleton0
- * @return int|null
+ * @return bool
  */
-select url_id
+select 1
 from   TST_MONKEY_URL
 where  url_url = :p_url_url
+and    ifnull(url_method, 'GET') = 'GET'
+limit 1
 ;
