@@ -14,7 +14,7 @@
     "plaisio/cookie": "^2.0",
     "plaisio/error-logger-core": "^1.2",
     "plaisio/helper-ob": "^1.1",
-    "plaisio/helper-url": "^1.1.1",
+    "plaisio/helper-url": "^1.1.2",
     "plaisio/kernel": "^3.0",
     "plaisio/request-handler": "^2.0",
     "plaisio/response": "^2.0",

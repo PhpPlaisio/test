@@ -70,9 +70,14 @@ class SelectControl extends Control
    */
   public function getRandomValue(): string
   {
-    $key = Random::randomKey($this->options);
+    if (!empty($this->options))
+    {
+      $key = Random::randomKey($this->options);
 
-    return $this->options[$key]['value'];
+      return $this->options[$key]['value'];
+    }
+
+    return '';
   }
 
   //--------------------------------------------------------------------------------------------------------------------

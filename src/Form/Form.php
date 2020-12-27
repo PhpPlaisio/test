@@ -5,7 +5,8 @@ namespace Plaisio\Test\Form;
 
 use Plaisio\Test\Form\Control\CheckboxControl;
 use Plaisio\Test\Form\Control\Control;
-use Plaisio\Test\Form\Control\NumberControl;
+use Plaisio\Test\Form\Control\DateControl;
+use Plaisio\Test\Form\Control\UrlControl;
 use Plaisio\Test\Form\Control\RadioControl;
 use Plaisio\Test\Form\Control\SelectControl;
 use Plaisio\Test\Form\Control\SubmitControl;
@@ -194,7 +195,7 @@ class Form
   private function extractElements(\DOMDocument $doc, \DOMNode $form)
   {
     $xpath = new \DOMXpath($doc);
-    $list  = $xpath->query('//input|//select|//textarea|//button', $form);
+    $list  = $xpath->query('//input|//select|//textarea|', $form);
     foreach ($list as $item)
     {
       /** @var \DOMNode $item */
@@ -219,8 +220,12 @@ class Form
               $control = new CheckboxControl($attributes);
               break;
 
+            case 'date':
+              $control = new DateControl($attributes);
+              break;
+
             case 'number':
-              $control = new NumberControl($attributes);
+              $control = new UrlControl($attributes);
               break;
 
             case 'radio':
@@ -229,6 +234,10 @@ class Form
 
             case 'submit':
               $control = new SubmitControl($attributes);
+              break;
+
+            case 'url':
+              $control = new UrlControl($attributes);
               break;
 
             case 'hidden':
@@ -258,6 +267,7 @@ class Form
           break;
 
         default:
+          echo $doc->textContent;
           throw new FallenException('tag', $tag);
       }
 

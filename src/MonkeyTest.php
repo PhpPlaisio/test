@@ -229,9 +229,10 @@ class MonkeyTest
     $wrapper = $this->request($url['url_url'], 'GET');
 
     $location = ($wrapper->getHeaders())['location'] ?? '';
+    $status   = $wrapper->getStatus();
     $content  = $wrapper->getContent();
 
-    if (substr($content ?? '', 0, 1)==='<')
+    if (200 <= $status && $status <= 399 && substr($content ?? '', 0, 1)==='<')
     {
       $doc = new \DOMDocument();
       @$doc->loadHTML($content, LIBXML_NOWARNING | LIBXML_NOERROR);
@@ -253,7 +254,7 @@ class MonkeyTest
     $this->store->tstMonkeyUrlUpdate($url['url_id'],
                                      $url['bul_id'],
                                      'GET',
-                                     $wrapper->getStatus(),
+                                     $status,
                                      $location,
                                      $title,
                                      Cast::toOptInt($hasForms),

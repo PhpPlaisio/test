@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Plaisio\Test\Form\Control;
 
-use SetBased\Helper\Cast;
-
 /**
- * Number form control.
+ * Date form control.
  */
-class NumberControl extends Control
+class DateControl extends Control
 {
   //--------------------------------------------------------------------------------------------------------------------
   /**
@@ -27,23 +25,30 @@ class NumberControl extends Control
   {
     $min = $control['min'] ?? null;
     $max = $control['max'] ?? null;
-    if (!Cast::isManInt($min))
+
+    $dateMin = ($min===null) ? false : \DateTime::createFromFormat('Y-m-d', $min);
+    if ($dateMin===false)
     {
-      $min = PHP_INT_MIN;
+      $dateMin = \DateTime::createFromFormat('Y-m-d', '1900-01-01');
     }
-    if (!Cast::isManInt($max))
+    $dateMax = ($max===null) ? false : \DateTime::createFromFormat('Y-m-d', $max);
+    if ($dateMax===false)
     {
-      $max = PHP_INT_MAX;
+      $dateMax = new \DateTime();
+      $dateMax = $dateMax->add(new \DateInterval('P10Y'));
     }
-    $min = Cast::toManInt($min);
-    $max = Cast::toManInt($max);
-    if ($max>$min)
+    if ($dateMin>$dateMax)
     {
-      $min = PHP_INT_MIN;
-      $max = PHP_INT_MAX;
+      $dateMin = \DateTime::createFromFormat('Y-m-d', '1900-01-01');
+      $dateMax = \DateTime::createFromFormat('Y-m-d', 'today');
+      $dateMax = $dateMax->add(new \DateInterval('P10Y'));
     }
 
-    return Cast::toManString(rand($min, $max));
+    $diff = $dateMin->diff($dateMax);
+    $rand = $dateMin->add(new \DateInterval(sprintf('P%dD', rand(0, $diff->days))));
+
+    var_dump([$dateMin, $dateMax, $rand]);
+    return $rand->format('Y-m-d');
   }
 
   //--------------------------------------------------------------------------------------------------------------------
