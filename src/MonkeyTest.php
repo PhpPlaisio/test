@@ -197,7 +197,7 @@ class MonkeyTest
     {
       $base = $matches['base_url'];
     }
-    elseif (preg_match('|^(?<base_url>[^/?]+)|', $path, $matches)===1)
+    elseif (preg_match('|^(?<base_url>/[^/?]+)|', $path, $matches)===1)
     {
       $base = $matches['base_url'];
     }
