@@ -7,7 +7,7 @@ use Plaisio\Cookie\CookieJar;
 use Plaisio\PlaisioKernel;
 
 /**
- * Abstract helper class fro crawling a website.
+ * Abstract helper class for crawling a website.
  */
 abstract class MonkeyTestHelper
 {
@@ -17,21 +17,21 @@ abstract class MonkeyTestHelper
    *
    * @var array
    */
-  protected $excludePatterns = [];
+  protected array $excludePatterns = [];
 
   /**
    * Pattern of paths for which forms must not be submitted.
    *
    * @var array
    */
-  private $excludeFormSubmitPatterns = [];
+  private array $excludeFormSubmitPatterns = [];
 
   /**
    * Pattern of paths for which forms must submit changes.
    *
    * @var array
    */
-  private $excludeSubmitChangesPatterns = [];
+  private array $excludeSubmitChangesPatterns = [];
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
@@ -73,7 +73,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Whether to exclude an URL from submitting forms based on the path of the URL.
+   * Whether to exclude a URL from submitting forms based on the path of the URL.
    *
    * @param string $path The path of the URL.
    *
@@ -86,7 +86,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Whether to exclude an URL from submitting forms which changes based on the path of the URL.
+   * Whether to exclude a URL from submitting forms which changes based on the path of the URL.
    *
    * @param string $path The path of the URL.
    *
@@ -99,7 +99,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Whether to follow an URL.
+   * Whether to follow a URL.
    *
    * @param string $url The fully qualified URL.
    *
@@ -117,7 +117,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Whether to exclude an URL from crawling based on the host of the URL.
+   * Whether to exclude a URL from crawling based on the host of the URL.
    *
    * @param string $host The host of the URL.
    *
@@ -132,7 +132,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Whether to exclude an URL from crawling based on the path of the URL.
+   * Whether to exclude a URL from crawling based on the path of the URL.
    *
    * @param string $path The path of the URL.
    *
@@ -145,7 +145,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Registers a path to be exclude from crawling.
+   * Registers a path to be excluded from crawling.
    *
    * @param string $path    The absolute path.
    * @param bool   $leading Whether to exclude the path based on the leading part of full path.
@@ -166,7 +166,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Registers a path to be exclude from submitting forms.
+   * Registers a path to be excluded from submitting forms.
    *
    * @param string $path    The absolute path.
    * @param bool   $leading Whether to exclude the path based on the leading part of full path.
@@ -187,7 +187,7 @@ abstract class MonkeyTestHelper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Registers a path to be exclude from submitting forms
+   * Registers a path to be excluded from submitting forms
    *
    * @param string $path    The absolute path.
    * @param bool   $leading Whether to exclude the path based on the leading part of full path.

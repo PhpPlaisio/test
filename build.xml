@@ -1,5 +1,36 @@
 <project name="Nahouw" default="build" basedir=".">
-    <property name="BUILD_DIR" value="../build"/>
+    <!-- Update dependencies -->
+    <target name="update">
+        <exec executable="composer" checkreturn="true" passthru="true">
+            <arg value="--ansi"/>
+            <arg value="update"/>
+        </exec>
+
+        <phing phingfile="build.xml" target="code-generation" haltonfailure="true"/>
+        <phing phingfile="build.xml" target="kernel" haltonfailure="true"/>
+        <phing phingfile="build.xml" target="outdated" haltonfailure="true"/>
+    </target>
+
+    <!-- Install dependencies -->
+    <target name="install">
+        <exec executable="composer" checkreturn="true" passthru="true">
+            <arg value="--ansi"/>
+            <arg value="install"/>
+        </exec>
+
+        <phing phingfile="build.xml" target="code-generation" haltonfailure="true"/>
+        <phing phingfile="build.xml" target="kernel" haltonfailure="true"/>
+        <phing phingfile="build.xml" target="outdated" haltonfailure="true"/>
+    </target>
+
+    <!-- Show outdated dependencies -->
+    <target name="outdated">
+        <exec executable="composer" checkreturn="true" passthru="true">
+            <arg value="--ansi"/>
+            <arg value="outdated"/>
+            <arg value="--direct"/>
+        </exec>
+    </target>
 
     <target name="code-generation">
         <exec executable="bin/stratum" checkreturn="true" passthru="true">
@@ -13,31 +44,6 @@
         <exec executable="bin/plaisio" checkreturn="true" passthru="true">
             <arg value="--ansi"/>
             <arg value="plaisio:kernel-properties"/>
-        </exec>
-    </target>
-
-    <!-- Run composer update and executes various other updates -->
-    <target name="update">
-        <exec executable="composer" checkreturn="true" passthru="true">
-            <arg value="--ansi"/>
-            <arg value="update"/>
-        </exec>
-        <phing phingfile="build.xml" target="code-generation" haltonfailure="true"/>
-        <phing phingfile="build.xml" target="kernel" haltonfailure="true"/>
-
-        <!-- Show outdated packages -->
-        <exec executable="composer" checkreturn="true" passthru="true">
-            <arg value="--ansi"/>
-            <arg value="outdated"/>
-            <arg value="--direct"/>
-        </exec>
-    </target>
-
-    <!-- Runs all unit tests. -->
-    <target name="unit">
-        <exec executable="bin/phpunit" passthru="true" checkreturn="true">
-            <arg value="--bootstrap=test/bootstrap.php"/>
-            <arg value="test"/>
         </exec>
     </target>
 

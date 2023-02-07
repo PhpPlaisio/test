@@ -66,7 +66,7 @@ EOT;
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Selects whether tan URL exists.
+   * Selects whether a URL exists.
    *
    * @param string|null $pUrlUrl The URL.
    *
@@ -90,7 +90,7 @@ EOT;
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Selects the details of an URL.
+   * Selects the details of a URL.
    *
    * @param int|null $pUrlId The ID of the URL.
    *
@@ -137,7 +137,7 @@ EOT;
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Insert an URL.
+   * Insert a URL.
    *
    * @param string|null $pUrlUrl        The URL to be inserted.
    * @param int|null    $pBulId         The ID of the base URL of the URI to be inserted.
@@ -222,7 +222,7 @@ EOT;
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Updates an URL.
+   * Updates a URL.
    *
    * @param int|null    $pUrlId        The ID of the URL.
    * @param int|null    $pBulId        The ID of the base URL.

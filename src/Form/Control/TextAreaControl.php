@@ -16,7 +16,7 @@ class TextAreaControl extends Control
    *
    * @var string
    */
-  private $content;
+  private string $content;
 
   //--------------------------------------------------------------------------------------------------------------------
 

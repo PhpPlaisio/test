@@ -16,7 +16,7 @@ abstract class Control
    *
    * @var array
    */
-  protected $attributes;
+  protected array $attributes;
 
   //--------------------------------------------------------------------------------------------------------------------
 

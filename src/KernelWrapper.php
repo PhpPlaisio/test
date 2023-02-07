@@ -23,35 +23,35 @@ class KernelWrapper
    *
    * @var string|null
    */
-  private $content;
+  private ?string $content = null;
 
   /**
    * The error handler.
    *
    * @var ErrorHandler|null
    */
-  private $errorHandler;
+  private ?ErrorHandler $errorHandler = null;
 
   /**
    * The kernel.
    *
    * @var PlaisioKernel
    */
-  private $kernel;
+  private PlaisioKernel $kernel;
 
   /**
    * The output buffer for logging the output of the kernel.
    *
    * @var OB
    */
-  private $ob;
+  private OB $ob;
 
   /**
    * The response object of the kernel.
    *
    * @var Response|null
    */
-  private $response;
+  private ?Response $response = null;
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
@@ -121,7 +121,7 @@ class KernelWrapper
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Requests an URL to the kernel.
+   * Requests a URL to the kernel.
    *
    * @param string $url     The URL to request.
    * @param string $method  The method.
@@ -231,10 +231,7 @@ class KernelWrapper
   private function tearDown(): void
   {
     // Restore the initial error handler.
-    if ($this->errorHandler!==null)
-    {
-      $this->errorHandler->unregisterErrorHandler();
-    }
+    $this->errorHandler?->unregisterErrorHandler();
 
     // Ensure the transaction is rolled back and the connection has been disconnected.
     try

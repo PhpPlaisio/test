@@ -26,14 +26,14 @@ class Form
    *
    * @var array
    */
-  private $attributes = [];
+  private array $attributes = [];
 
   /**
    * The form elements attributes.
    *
    * @var Control[]
    */
-  private $controls = [];
+  private array $controls = [];
 
   //--------------------------------------------------------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ class Form
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Returns the names of the submit controls of this form.
+   * Returns the names of the submitted controls of this form.
    *
    * @return string[]
    */
@@ -155,7 +155,7 @@ class Form
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Returns the to which the for mus be submitted.
+   * Returns the URL to which the form must be submitted.
    *
    * @return string
    */
@@ -192,10 +192,10 @@ class Form
    * @param \DOMDocument $doc  The DOM document.
    * @param \DOMNode     $form The form.
    */
-  private function extractElements(\DOMDocument $doc, \DOMNode $form)
+  private function extractElements(\DOMDocument $doc, \DOMNode $form): void
   {
     $xpath = new \DOMXpath($doc);
-    $list  = $xpath->query('//input|//select|//textarea|', $form);
+    $list  = $xpath->query('//input|//select|//textarea', $form);
     foreach ($list as $item)
     {
       /** @var \DOMNode $item */
@@ -284,7 +284,7 @@ class Form
    *
    * @param \DOMNode $form The form.
    */
-  private function extractForm(\DOMNode $form)
+  private function extractForm(\DOMNode $form): void
   {
     if ($form->hasAttributes())
     {

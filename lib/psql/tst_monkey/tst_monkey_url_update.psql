@@ -1,5 +1,5 @@
 /**
- * Updates an URL.
+ * Updates a URL.
 
  * @param int    :p_url_id        The ID of the URL.
  * @param int    :p_bul_id        The ID of the base URL.

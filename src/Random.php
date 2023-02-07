@@ -47,7 +47,7 @@ class Random
    *
    * @return mixed
    */
-  public static function randomElement(array $array)
+  public static function randomElement(array $array): mixed
   {
     return $array[rand(0, count($array) - 1)];
   }
@@ -58,9 +58,9 @@ class Random
    *
    * @param array $array The values.
    *
-   * @return mixed
+   * @return int|string
    */
-  public static function randomKey(array $array)
+  public static function randomKey(array $array): int|string
   {
     $keys = array_keys($array);
 

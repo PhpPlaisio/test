@@ -1,5 +1,5 @@
 /**
- * Selects the details of an URL.
+ * Selects the details of a URL.
  *
  * @param int :p_url_id The ID of the URL.
  *

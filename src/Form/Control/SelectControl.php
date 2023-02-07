@@ -16,10 +16,9 @@ class SelectControl extends Control
    *
    * @var array
    */
-  private $options;
+  private array $options;
 
   //--------------------------------------------------------------------------------------------------------------------
-
   /**
    * Control constructor.
    *

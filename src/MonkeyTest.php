@@ -12,7 +12,7 @@ use SetBased\Helper\Cast;
 /**
  * Test cases for CoreRequestParameterResolverTest.
  *
- * Note: A base URL is the part of an URL without (clean) parameters.
+ * Note: A base URL is the part of a URL without (clean) parameters.
  */
 class MonkeyTest
 {
@@ -22,28 +22,28 @@ class MonkeyTest
    *
    * @var array<string,int>
    */
-  private $baseUrls = [];
+  private array $baseUrls = [];
 
   /**
    * The cookie jar.
    *
    * @var CookieJar
    */
-  private $cookies;
+  private CookieJar $cookies;
 
   /**
    * The helper object for monkey testing.
    *
    * @var MonkeyTestHelper
    */
-  private $helper;
+  private MonkeyTestHelper $helper;
 
   /**
    * The data store.
    *
    * @var TestStore
    */
-  private $store;
+  private TestStore $store;
 
   //--------------------------------------------------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ class MonkeyTest
   /**
    * Crawls the website for monkey testing.
    */
-  private function crawl()
+  private function crawl(): void
   {
     $url   = $this->helper->getHomePage();
     $bulId = $this->getBulId($url);
@@ -127,7 +127,7 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Extracts the links from a HTML document.
+   * Extracts the links from an HTML document.
    *
    * @param \DOMDocument $doc The HTMl document.
    * @param array        $url The details (see TST_MONKEY_URL) of the URL of the HTML document.
@@ -157,7 +157,7 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Extracts the title from a HTML document.
+   * Extracts the title from an HTML document.
    *
    * @param \DOMDocument $doc The HTML document.
    *
@@ -181,7 +181,7 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Returns the ID of the base URL of an URL.
+   * Returns the ID of the base URL of a URL.
    *
    * @param string $url The URL.
    *
@@ -220,11 +220,11 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Request an URL with GET method.
+   * Request a URL with GET method.
    *
    * @param array $url The details of the URL.
    */
-  private function getPageUrl(array $url)
+  private function getPageUrl(array $url): void
   {
     $wrapper = $this->request($url['url_url'], 'GET');
 
@@ -232,7 +232,7 @@ class MonkeyTest
     $status   = $wrapper->getStatus();
     $content  = $wrapper->getContent();
 
-    if (200 <= $status && $status <= 399 && substr($content ?? '', 0, 1)==='<')
+    if (200 <= $status && $status <= 399 && str_starts_with($content ?? '', '<'))
     {
       $doc = new \DOMDocument();
       @$doc->loadHTML($content, LIBXML_NOWARNING | LIBXML_NOERROR);
@@ -269,7 +269,7 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Returns an URL with fragment (if any) removed.
+   * Returns a URL with fragment (if any) removed.
    *
    * @param string $url The absolute URL of the page.
    *
@@ -285,7 +285,7 @@ class MonkeyTest
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Requests an URL.
+   * Requests a URL.
    *
    * @param string $url    The URL to request.
    * @param string $method The method to use.
@@ -386,7 +386,7 @@ class MonkeyTest
       $location = ($wrapper->getHeaders())['location'] ?? '';
       $content  = $wrapper->getContent();
 
-      if (substr($content ?? '', 0, 1)==='<')
+      if (str_starts_with($content ?? '', '<'))
       {
         $doc = new \DOMDocument();
         @$doc->loadHTML($content, LIBXML_NOWARNING | LIBXML_NOERROR);

@@ -1,5 +1,5 @@
 /**
- * Selects whether tan URL exists.
+ * Selects whether a URL exists.
  *
  * @param string :p_url_url The URL.
  *

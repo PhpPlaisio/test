@@ -1,5 +1,5 @@
 /**
- * Insert an URL.
+ * Insert a URL.
  *
  * @param string :p_url_url         The URL to be inserted.
  * @param int    :p_bul_id          The ID of the base URL of the URI to be inserted.

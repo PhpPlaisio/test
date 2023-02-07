@@ -7,39 +7,38 @@
   ],
   "license": "MIT",
   "require": {
-    "php": ">=7.3",
+    "php": ">=8.1",
     "ext-dom": "*",
     "ext-libxml": "*",
-    "plaisio/console": "^2.4.4",
-    "plaisio/cookie": "^2.0",
-    "plaisio/error-logger-core": "^1.2",
-    "plaisio/helper-ob": "^1.1",
-    "plaisio/helper-url": "^1.1.2",
-    "plaisio/kernel": "^3.0",
-    "plaisio/request-handler": "^2.0",
-    "plaisio/response": "^2.0",
-    "plaisio/response-core": "^2.3",
-    "setbased/php-stratum": "^6.0",
-    "setbased/php-stratum-middle": "^5.7",
-    "setbased/php-stratum-sqlite-pdo": "^1.4",
-    "symfony/console": "^5.2.0"
+    "plaisio/cookie": "^2.1.0",
+    "plaisio/error-logger-core": "^1.6.0",
+    "plaisio/helper-ob": "^1.2.0",
+    "plaisio/helper-url": "^1.2.0",
+    "plaisio/kernel": "^3.2.1",
+    "plaisio/request-handler": "^2.1.0",
+    "plaisio/response": "^2.1.0",
+    "plaisio/response-core": "^2.7.0",
+    "setbased/php-stratum": "^6.2.0",
+    "setbased/php-stratum-middle": "^5.11.0",
+    "setbased/php-stratum-sqlite-pdo": "^1.6.0",
+    "symfony/console": "^6.2.5"
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require-dev": {
-    "phing/phing": "^2.0",
-    "phpunit/phpunit": "^9.5"
+    "phing/phing": "^3.0.0-RC4",
+    "plaisio/console-kernel": "^1.0.1"
   },
   "autoload": {
     "psr-4": {
       "Plaisio\\Test\\": "src/"
     }
   },
-  "autoload-dev": {
-    "psr-4": {
-      "Plaisio\\Test\\Test\\": "test/"
-    }
-  },
   "config": {
     "bin-dir": "bin/",
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "phing/phing-composer-configurator": true
+    }
   }
 }
