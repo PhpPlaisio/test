@@ -4,10 +4,10 @@
  * @type rows
  */
 select url_id
-,      bul_id
-,      url_url
-,      url_id_referrer
-from   TST_MONKEY_URL
-where  url_method    = 'GET'
-and    url_has_forms = 1
+     , bul_id
+     , url_url
+     , url_id_referrer
+from TST_MONKEY_URL
+where url_method = 'GET'
+  and url_has_forms = 1
 order by random()

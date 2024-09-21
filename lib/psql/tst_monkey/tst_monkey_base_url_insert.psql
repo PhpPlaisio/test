@@ -1,14 +1,9 @@
 /**
  * Insert a base URL.
  *
- * @param string :p_bul_url The base URL to be inserted.
+ * @param text :p_bul_url The base URL to be inserted.
  *
  * @type lastInsertId
  */
-insert into TST_MONKEY_BASE_URL( bul_url
-,                                bul_pages
-,                                bul_crawled )
-values( :p_bul_url
-,       0
-,       0)
-;
+insert into TST_MONKEY_BASE_URL(bul_url, bul_pages, bul_crawled)
+values (:p_bul_url, 0, 0);

@@ -6,8 +6,7 @@
  * @type row1
  */
 select url_id
-,      url_url
-,      url_id_referrer
-from   TST_MONKEY_URL
-where  url_id = :p_url_id
-;
+     , url_url
+     , url_id_referrer
+from TST_MONKEY_URL
+where url_id = :p_url_id;

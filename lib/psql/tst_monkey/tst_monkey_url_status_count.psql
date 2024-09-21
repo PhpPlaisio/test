@@ -4,39 +4,35 @@
  * @type rows
  */
 select url_status
-,      sum(url_count) as url_count
-from
-(
-  select '1xx' as url_status
-  ,       0    as url_count
+     , sum(url_count) as url_count
+from ( select '1xx' as url_status
+            , 0     as url_count
 
-  union all
+       union all
 
-  select '2xx'
-  ,       0
+       select '2xx'
+            , 0
 
-  union all
+       union all
 
-  select '3xx'
-  ,       0
+       select '3xx'
+            , 0
 
-  union all
+       union all
 
-  select '4xx'
-  ,       0
+       select '4xx'
+            , 0
 
-  union all
+       union all
 
-  select '5xx'
-  ,       0
+       select '5xx'
+            , 0
 
-  union all
+       union all
 
-  select '' || (url_status / 100) || 'xx'
-  ,      count(*)
-  from   TST_MONKEY_URL
-  where  url_status is not null
-  group by 1
-) t
-group by 1
-;
+       select '' || (url_status / 100) || 'xx'
+            , count(*)
+       from TST_MONKEY_URL
+       where url_status is not null
+       group by 1 ) t
+group by 1;

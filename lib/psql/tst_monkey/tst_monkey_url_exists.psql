@@ -1,14 +1,12 @@
 /**
  * Selects whether a URL exists.
  *
- * @param string :p_url_url The URL.
+ * @param text :p_url_url The URL.
  *
- * @type   singleton0
- * @return bool
+ * @type singleton0 bool
  */
 select 1
-from   TST_MONKEY_URL
-where  url_url = :p_url_url
-and    ifnull(url_method, 'GET') = 'GET'
-limit 1
-;
+from TST_MONKEY_URL
+where url_url = :p_url_url
+  and ifnull(url_method, 'GET') = 'GET'
+limit 1;
