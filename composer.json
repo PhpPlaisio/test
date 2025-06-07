@@ -7,7 +7,7 @@
   ],
   "license": "MIT",
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.3",
     "ext-dom": "*",
     "ext-libxml": "*",
     "plaisio/cookie": "^2.1.0",
@@ -24,7 +24,7 @@
     "symfony/console": "^6.0|^7.0"
   },
   "require-dev": {
-    "phing/phing": "^3.0.0",
+    "phing/phing": "^3.0.1",
     "plaisio/console-kernel": "^1.0.1"
   },
   "autoload": {
